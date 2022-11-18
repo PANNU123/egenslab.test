@@ -21,3 +21,4 @@ use App\Http\Controllers\TestController;
 Route::get('/', [TestController::class, 'test'])->name('test');
 Route::post('test/store', [TestController::class, 'testStore'])->name('test.store');
 Route::get('test/search', [TestController::class, 'testSearch'])->name('test.search');
+Route::get('test/delete', [TestController::class, 'testDelete'])->name('test.delete');

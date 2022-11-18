@@ -14,8 +14,7 @@
 <body>
     <div class="container">
         <div class="main-form">
-            <form action="{{ route('test.store') }}" method="POST">
-                @csrf
+            <form>
             <h2>Add Task</h2>
                 <table id="this-table" class="sortable-table">
                     <thead>
@@ -43,8 +42,7 @@
                         </tr>
                     </tfoot>
                 </table>
-                <button type="submit" class="btn btn-primary submit">Submit</button>
-{{--                <button id="submitBtn" class="btn btn-primary submit">Submit</button>--}}
+                <button id="submitBtn" class="btn btn-primary submit">Submit</button>
             </form>
 
         </div>
@@ -62,14 +60,12 @@
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
-                <tbody>
-
-{{--                    <th scope="row">1</th>--}}
+                <tbody id="tbody_value">
                       @foreach($test as $item)
                       <tr>
                         <td>{{$item -> title}}</td>
                         <td>{{$item -> value}}</td>
-                        <td><button class="btn btn-info">Delete</button></td>
+                          <td><a href="javascript:void(0)" class="btn btn-info dltBtn" data-id="{{$item->id}}">Delete</a></td>
                      </tr>
                       @endforeach
                 </tbody>
@@ -90,41 +86,40 @@
             }
         });
 
-        {{--$("#submitBtn").on('click',function (e){--}}
-        {{--    e.preventDefault();--}}
-        {{--    let title = [];--}}
-        {{--    let value = [];--}}
+        $("#submitBtn").on('click',function (e){
+            e.preventDefault();
 
-        {{--    $('.item_title').each(function(){--}}
-        {{--        title.push($(this).text());--}}
-        {{--    });--}}
-        {{--    $('.item_value').each(function(){--}}
-        {{--        value.push($(this).text());--}}
-        {{--    });--}}
-        {{--    console.log(title);--}}
-        {{--    console.log(value);--}}
-        {{--    $.ajax({--}}
-        {{--        url: "{{route('test.store')}}",--}}
-        {{--        method:'post',--}}
-        //         data: {
-        //             title: title,
-        //             value: value,
-        //         },
-        {{--        success:function (data){--}}
-        {{--            if(data.success == true){--}}
-        {{--                console.log(data);--}}
-        {{--            }else{--}}
-        {{--                console.log(data);--}}
-        {{--            }--}}
-        {{--        },--}}
-        {{--        error:function(data){--}}
-        {{--            $('#saveBtn').html('Save Changes');--}}
-        {{--        }--}}
-        {{--    });--}}
-        {{--});--}}
+            var title = $("input[name='title[]']")
+                .map(function(){return $(this).val();}).get();
+
+            var value = $("input[name='value[]']")
+                .map(function(){return $(this).val();}).get();
+            $.ajax({
+                url: "{{route('test.store')}}",
+                method:'post',
+                data: {
+                    title: title,
+                    value: value,
+                },
+                success:function (data){
+                    if(data.success == true){
+                        $('#tbody_value').html(data);
+                        $('.item_title').val('');
+                        $('.item_value').val('');
+                    }else{
+                        $('#tbody_value').html(data);
+                        $('.item_title').val('');
+                        $('.item_value').val('');
+                    }
+                },
+                error:function(data){
+                    $('#saveBtn').html('Save Changes');
+                }
+            });
+        });
 
         $('#searchBox').on('keyup',function(){
-            $value=$(this).val();
+            $value = $(this).val();
             $.ajax({
                 type : 'get',
                 url: "{{route('test.search')}}",
@@ -132,9 +127,26 @@
                     'search':$value
                 },
                 success:function(data){
-                    $('tbody').html(data);
+                    $('#tbody_value').html(data);
                 }
             });
+        });
+
+        //delete Category
+        $(".dltBtn").on('click',function (e){
+            var value = $(this).data('id');
+            // alert(value);
+            $.ajax({
+                type : 'get',
+                url: "{{route('test.delete')}}",
+                data: {
+                    value: value,
+                },
+                success:function(data){
+                    $('#tbody_value').html(data);
+                }
+            });
+
         });
     });
 </script>

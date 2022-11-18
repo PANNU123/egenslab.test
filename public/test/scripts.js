@@ -9,8 +9,8 @@ $(document).ready(function () {
         var newRow = $("<tr>");
         var cols = "";
 
-        cols += '<td><input class="form-control" type="text" name="title[]"/></td>';
-        cols += '<td><input class="form-control" type="text" name="value[]"/></td>';
+        cols += '<td><input class="form-control item_title" type="text" name="title[]"/></td>';
+        cols += '<td><input class="form-control item_value" type="text" name="value[]"/></td>';
 
         cols += '<td><div class="button-delete"></div></td>';
         newRow.append(cols);

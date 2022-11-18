@@ -21,23 +21,53 @@ class TestController extends Controller
                     'title' => $title[$i],
                     'value' => $value[$i],
                 ];
-                DB::table('tests')->insert($datasave);
+                $output =  DB::table('tests')->insert($datasave);
             }
-        return redirect()->back();
+
+        $output="";
+        $data = Test::get();
+        foreach ($data as $key => $item) {
+            $output.='<tr>'.
+                '<td>'.$item->title.'</td>'.
+                '<td>'.$item->value.'</td>'.
+                '<td><a href="javascript:void(0)" class="btn btn-info dltBtn" data-id="'.$item->id.'">Delete</a></td>'.
+                '</tr>';
+        }
+//        return Response($output);
+        return response()->json($output);
     }
     public function testSearch(Request $request){
         if ($request->ajax()){
             $output="";
             $data = Test::where('title', 'LIKE', "%$request->search%")->orWhere('value', 'LIKE', "%$request->search%")->get();
-//            return view('test.search',compact('data'));
             foreach ($data as $key => $item) {
                 $output.='<tr>'.
                     '<td>'.$item->title.'</td>'.
                     '<td>'.$item->value.'</td>'.
-                    '<td><button class="btn btn-info">Delete</button></td>'.
+                    '<td><a href="javascript:void(0)" class="btn btn-info dltBtn" data-id="'.$item->id.'">Delete</a></td>'.
                     '</tr>';
             }
-            return Response($output);
+//            return Response($output);
+            return response()->json($output);
+        }
+    }
+
+    public function testDelete(Request $request){
+        if ($request->ajax()){
+            $output="";
+            $dlt = Test::where('id',$request->value)->delete();
+            $data = Test::get();
+            if($dlt){
+                foreach ($data as $key => $item) {
+                    $output.='<tr>'.
+                        '<td>'.$item->title.'</td>'.
+                        '<td>'.$item->value.'</td>'.
+                        '<td><a href="javascript:void(0)" class="btn btn-info dltBtn" data-id="'.$item->id.'">Delete</a></td>'.
+                        '</tr>';
+                }
+//                return Response($output);
+                return response()->json($output);
+            }
         }
     }
 }
